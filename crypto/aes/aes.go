@@ -6,6 +6,8 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"fmt"
+	"github.com/realth000/ToGoTool/crypto/hash"
+	"github.com/realth000/ToGoTool/slice"
 	"io"
 )
 
@@ -57,23 +59,43 @@ func checkAESType(key []byte) Type {
 	}
 }
 
-func GenerateAESKey(size Type) ([]byte, error) {
-	var s int
+func getAESKeySize(size Type) (int, error) {
 	switch size {
 	case Type128:
-		s = 16
+		return 16, nil
 	case Type192:
-		s = 24
+		return 24, nil
 	case Type256:
-		s = 32
+		return 32, nil
 	default:
-		return nil, fmt.Errorf("invalid AES key size: %d", size)
+		return -1, fmt.Errorf("invalid AES key size: %d", size)
+	}
+}
+
+func GenerateAESKey(size Type) ([]byte, error) {
+	s, err := getAESKeySize(size)
+	if err != nil {
+		return nil, err
 	}
 	ret := make([]byte, s)
 	if _, err := rand.Read(ret); err != nil {
 		return nil, fmt.Errorf("failed to generate: %v", err)
 	}
 	return ret, nil
+}
+
+func GenerateAESKeyFromString(str string, size Type) ([]byte, error) {
+	s, err := getAESKeySize(size)
+	if err != nil {
+		return nil, err
+	}
+	d := hash.Hash(hash.SumSHA3_256, slice.ByteFromString(str))
+	return d[:s], nil
+}
+
+func GenerateAESKeyFromBytes(bytes []byte, size Type) ([]byte, error) {
+	s, err := GenerateAESKeyFromString(slice.ByteToString(bytes), size)
+	return s, err
 }
 
 func Encrypt(mode Mode, key []byte, data []byte) ([]byte, error) {
