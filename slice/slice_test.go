@@ -115,3 +115,41 @@ func TestByteToString(t *testing.T) {
 		})
 	}
 }
+
+func TestRemoveWhere(t *testing.T) {
+	for _, v := range []struct {
+		name           string
+		data           []int
+		expectedResult []int
+		checkFunc      func(i int) bool
+	}{
+		{
+			name:           "remove even numbers",
+			data:           []int{-2, -1, 4, 5, 6, 7, 8},
+			expectedResult: []int{-1, 5, 7},
+			checkFunc:      func(i int) bool { return i%2 == 0 },
+		},
+		{
+			name:           "remove all numbers",
+			data:           []int{-2, -1, 4, 5, 6, 7, 8},
+			expectedResult: []int{},
+			checkFunc:      func(i int) bool { return true },
+		},
+		{
+			name:           "remove none",
+			data:           []int{-2, -1, 4, 5, 6, 7, 8},
+			expectedResult: []int{-2, -1, 4, 5, 6, 7, 8},
+			checkFunc:      func(i int) bool { return false },
+		},
+	} {
+		t.Run(v.name, func(t *testing.T) {
+			d := RemoveWhere(v.data, v.checkFunc)
+			if len(d) == 0 && len(v.expectedResult) == 0 {
+				return
+			}
+			if !reflect.DeepEqual(v.expectedResult, d) {
+				t.Errorf("expected %v, got %v", v.expectedResult, d)
+			}
+		})
+	}
+}

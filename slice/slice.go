@@ -40,3 +40,18 @@ func ByteToString(b []byte) string {
 	t.Len = sliceHeader.Len
 	return s
 }
+
+// RemoveWhere removes elements in slice s (type is []T) where those elements
+// run true in checkFunc.
+// e.g.
+// []int{1, 2, 3} = RemoveWhere([]int{1, 2, 3, 4, 5}, func(i int) bool { return s > 3 })
+// removes all elements greater than 3.
+func RemoveWhere[T any](s []T, checkFunc func(T) bool) []T {
+	var ret []T
+	for _, k := range s {
+		if !checkFunc(k) {
+			ret = append(ret, k)
+		}
+	}
+	return ret
+}
