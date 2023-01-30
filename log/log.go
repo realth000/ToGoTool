@@ -40,7 +40,7 @@ func DebugPrintln(args ...any) {
 }
 
 func Debugf(format string, args ...any) {
-	logger.Debugf(format, args)
+	logger.Debugf(format, args...)
 }
 
 func DebugPrintf(format string, args ...any) {
@@ -64,7 +64,7 @@ func InfoPrintln(args ...any) {
 }
 
 func Infof(format string, args ...any) {
-	logger.Infof(format, args)
+	logger.Infof(format, args...)
 }
 
 func InfoPrintf(format string, args ...any) {
@@ -88,15 +88,15 @@ func ErrorPrintln(args ...any) {
 }
 
 func Errorf(format string, args ...any) {
-	logger.Debugf(format, args)
+	logger.Errorf(format, args...)
 }
 
 func ErrorPrintf(format string, args ...any) {
 	if logger.Level < logrus.ErrorLevel {
 		return
 	}
-	_, _ = fmt.Fprintf(os.Stderr, format, args...)
-	Errorf(format, args)
+	_, _ = fmt.Fprintf(os.Stderr, fmt.Sprintf(format, args...))
+	Errorf(fmt.Sprintf(format, args...))
 }
 
 func Fatalln(args ...any) {
@@ -112,14 +112,14 @@ func FatalPrintln(args ...any) {
 }
 
 func Fatalf(format string, args ...any) {
-	logger.Fatalf(format, args)
+	logger.Fatalf(format, args...)
 }
 
 func FatalPrintf(format string, args ...any) {
 	if logger.Level < logrus.FatalLevel {
 		return
 	}
-	_, _ = fmt.Fprintf(os.Stderr, format, args...)
+	_, _ = fmt.Fprintf(os.Stderr, fmt.Sprintf(format, args...))
 	Fatalf(format, args)
 }
 
@@ -136,14 +136,14 @@ func PanicPrintln(args ...any) {
 }
 
 func Panicf(format string, args ...any) {
-	logger.Panicf(format, args)
+	logger.Panicf(format, args...)
 }
 
 func PanicPrintf(format string, args ...any) {
 	if logger.Level < logrus.PanicLevel {
 		return
 	}
-	_, _ = fmt.Fprintf(os.Stderr, format, args...)
+	_, _ = fmt.Fprintf(os.Stderr, fmt.Sprintf(format, args...))
 	Panicf(format, args)
 }
 
@@ -158,5 +158,5 @@ func DryErrorf(format string, args ...any) {
 	if logger.Level < logrus.ErrorLevel {
 		return
 	}
-	_, _ = fmt.Fprintf(os.Stderr, format, args...)
+	_, _ = fmt.Fprintf(os.Stderr, fmt.Sprintf(format, args...))
 }
