@@ -9,16 +9,30 @@ import (
 
 // PostRequest sends a POST method request
 // and returns the response.
-func PostRequest(url string, headers map[string]string, body string) (string, error) {
+func PostRequest(url string, opt ...Option) (string, error) {
 	// TODO: Add POST timeout here.
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", url, strings.NewReader(body))
+	option := defaultOption()
+	if len(opt) != 0 {
+		option.copyWith(opt[0])
+	}
+	req, err := http.NewRequest("POST", url, strings.NewReader(option.Body))
 	if err != nil {
 		return "", err
 	}
-	for headerKey, headerValue := range headers {
+	if option.Cookie != "" {
+		req.Header.Add("cookie", option.Cookie)
+	}
+	for headerKey, headerValue := range option.Header {
 		req.Header.Set(headerKey, headerValue)
 	}
+
+	query := req.URL.Query()
+	for queryKey, queryValue := range option.Query {
+		query.Add(queryKey, queryValue)
+	}
+	req.URL.RawQuery = query.Encode()
+
 	res, err := client.Do(req)
 	if res != nil {
 		defer func() { _ = res.Body.Close() }()
@@ -40,12 +54,12 @@ func GetRequest(url string, opt ...Option) ([]byte, error) {
 	var resp *http.Response
 	var ret []byte
 	option := defaultOption()
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, err
-	}
 	if len(opt) != 0 {
 		option.copyWith(opt[0])
+	}
+	req, err := http.NewRequest("GET", url, strings.NewReader(option.Body))
+	if err != nil {
+		return nil, err
 	}
 	if option.Cookie != "" {
 		req.Header.Add("cookie", option.Cookie)
@@ -53,6 +67,13 @@ func GetRequest(url string, opt ...Option) ([]byte, error) {
 	for key, value := range option.Header {
 		req.Header.Set(key, value)
 	}
+
+	query := req.URL.Query()
+	for queryKey, queryValue := range option.Query {
+		query.Add(queryKey, queryValue)
+	}
+	req.URL.RawQuery = query.Encode()
+
 	resp, err = client.Do(req)
 	if err != nil {
 		return nil, err
