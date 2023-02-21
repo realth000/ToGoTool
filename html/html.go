@@ -28,6 +28,29 @@ func NodeSearchAttrEq(node *html.Node, attrName string, attrValue string) bool {
 	return val == attrValue
 }
 
+// HtmlNodeGrepAttr greps value of given attrName with reg.
+// If attr value does not match reg, return an empty string.
+// If reg is nil, use strings.Contains to match attr value.
+func HtmlNodeGrepAttr(node *html.Node, attrName string, reg *regexp.Regexp) string {
+	if node == nil {
+		return ""
+	}
+	if reg == nil {
+		for _, attr := range node.Attr {
+			if attr.Key == attrName {
+				return attr.Val
+			}
+		}
+	} else {
+		for _, attr := range node.Attr {
+			if attr.Key == attrName && reg.MatchString(attr.Val) {
+				return reg.FindString(attr.Val)
+			}
+		}
+	}
+	return ""
+}
+
 // NodeGrepHref greps a href link that matches regexp in node.
 // Return link when regexp is nil.
 func NodeGrepHref(node *html.Node, reg *regexp.Regexp) string {
