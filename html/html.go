@@ -1,11 +1,13 @@
 package html
 
 import (
-	"github.com/PuerkitoBio/goquery"
-	"golang.org/x/net/html"
+	"fmt"
 	"net/http"
 	"regexp"
 	"strings"
+
+	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/net/html"
 )
 
 // NodeSearchAttr searches html node, find attr's value and return.
@@ -120,6 +122,9 @@ func DocumentFromUrl(urlRef string) (*goquery.Document, error) {
 	page, err := http.Get(urlRef)
 	if err != nil {
 		return nil, err
+	}
+	if page.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%d:%s", page.StatusCode, page.Status)
 	}
 	defer page.Body.Close()
 	if page.StatusCode != 200 {

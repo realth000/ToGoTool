@@ -37,6 +37,9 @@ func PostRequest(url string, opt ...Option) (string, error) {
 	if res != nil {
 		defer func() { _ = res.Body.Close() }()
 	}
+	if res.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("%d:%s", res.StatusCode, res.Status)
+	}
 	if err != nil {
 		return "", err
 	}
@@ -77,6 +80,9 @@ func GetRequest(url string, opt ...Option) ([]byte, error) {
 	resp, err = client.Do(req)
 	if err != nil {
 		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil fmt.Errorf("%d:%s", resp.StatusCode, resp.Status)
 	}
 	defer func() { _ = resp.Body.Close() }()
 	ret, err = io.ReadAll(resp.Body)
