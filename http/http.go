@@ -82,7 +82,7 @@ func GetRequest(url string, opt ...Option) ([]byte, error) {
 		return nil, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil fmt.Errorf("%d:%s", resp.StatusCode, resp.Status)
+		return nil, fmt.Errorf("%d:%s", resp.StatusCode, resp.Status)
 	}
 	defer func() { _ = resp.Body.Close() }()
 	ret, err = io.ReadAll(resp.Body)
